@@ -12,7 +12,7 @@ Navigate to the directory where you want to store your project (use cd command t
 Clone the project from GitHub by running:
 
 bash
-git clone https://github.com/your-username/excel-search-engine.git
+git clone https://github.com/Richtsnoer/excel-searchengine/tree/master
 Replace your-username/excel-search-engine with the actual GitHub repository link.
 
 Change into the project directory:
@@ -54,14 +54,7 @@ bash
 pip install -r requirements.txt
 This will install all the dependencies that your Flask app requires (e.g., Flask, Pandas, openpyxl, etc.).
 
-4. Set Up Directories and Files
-Ensure that the uploads and rdl_files directories exist to store uploaded files and .rdl files. If they don't exist, create them:
-
-Create necessary directories:
-
-bash
-mkdir uploads rdl_files
-5. Run the Application
+4. Run the Application
 Now that everything is set up, you're ready to run the Flask app.
 
 Run the Flask app:
@@ -74,7 +67,7 @@ bash
 * Running on http://127.0.0.1:8080/ (Press CTRL+C to quit)
 This indicates that the Flask app is running locally on your computer at port 8080.
 
-6. Access the Application
+5. Access the Application
 On the same machine (where the Flask app is running), open a web browser and go to:
 
 bash
