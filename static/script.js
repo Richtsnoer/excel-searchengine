@@ -130,8 +130,64 @@ if (typeof fetchData === "undefined") {
             .catch(error => {
                 console.error("Error fetching data:", error);
                 document.getElementById("table-body").innerHTML = `<tr><td colspan="100%">An error occurred: ${error.message}</td></tr>`;
+
             });
     }
 
+
     window.fetchData = fetchData;
 }
+// ✅ USER upload handler (for users.xlsx)
+const userUploadForm = document.getElementById("userUploadForm");
+const userFileInput = document.getElementById("userFileInput");
+
+if (userUploadForm && userFileInput) {
+    userUploadForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (userFileInput.files.length === 0) {
+            alert("🚨 Please select a user file to upload!");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("file", userFileInput.files[0]);
+
+        try {
+            let response = await fetch("http://127.0.0.1:8080/upload-users", {
+                method: "POST",
+                body: formData,
+            });
+
+            let data = await response.json();
+
+            if (response.ok) {
+                alert("✅ User file uploaded successfully!");
+                console.log("👥 Upload Users Success:", data);
+            } else {
+                alert(`❌ Upload failed: ${data.error}`);
+                console.error("❌ Upload Users Error:", data);
+            }
+        } catch (error) {
+            console.error("❌ Error uploading user file:", error);
+            alert("⚠️ An error occurred while uploading the user file.");
+        }
+    });
+} else {
+    console.warn("⚠️ User upload form or input not found in DOM.");
+}
+
+    // <script>
+    //     document.getElementById("backToLogin").addEventListener("click", function() {
+    //     // Load the login page content via AJAX
+    //     fetch("/login")
+    //         .then(response => response.text())
+    //         .then(html => {
+    //             // Replace the current page content with the login page content
+    //             document.body.innerHTML = html;
+    //         })
+    //         .catch(error => {
+    //             console.error("Error loading login page:", error);
+    //         });
+    // });
+    // </script>

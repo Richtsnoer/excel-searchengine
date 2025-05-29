@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Search Engine</title>
-<!--    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">-->
     <link href="/static/styles.css" rel="stylesheet">
 </head>
 <body>
+    <!-- ⬇️ moved top-bar up here to keep it always on top and fixed -->
+    <div class="top-bar">
+        <span class="username-label">{{ username }}</span>
+        <form action="{{ url_for('logout') }}" method="get">
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+
     <h1>Excel Search Engine</h1>
 
     <!-- Search bar -->
     <input type="text" id="searchInput" placeholder="Search..." oninput="fetchData(this.value)">
 
-<!--    <script src="{{ url_for('static', filename='script.js') }}"></script>-->
-
-    <p id="description" style="display:none;"></p> <!-- Description (hidden by default) -->
+    <p id="description" style="display:none;"></p>
 
     <table id="results-table">
         <thead>
@@ -26,10 +31,17 @@
     <br>
 
     <form id="uploadForm" enctype="multipart/form-data" method="POST">
-    <input type="file" id="fileInput" name="file" accept=".xlsx, .xls"/>
-    <button type="submit">Upload New Excel File</button>
-    <button type="button" id="downloadexcel">Download Excelsheet</button>
-</form>
+        <input type="file" id="fileInput" name="file" accept=".xlsx, .xls"/>
+        <button type="submit">Upload New Excel File</button>
+        <button type="button" id="downloadexcel">Download Excelsheet</button>
+    </form>
+
+    <br><hr>
+    <h3>Upload user and password</h3>
+    <form id="userUploadForm" enctype="multipart/form-data" method="POST">
+        <input type="file" id="userFileInput" name="file" accept=".xlsx, .xls" />
+        <button type="submit">Upload Users</button>
+    </form>
 
     <script src="/static/script.js"></script>
 </body>

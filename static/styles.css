@@ -1,11 +1,43 @@
-/* Basic body styling */
+/* Top bar styling for username and logout */
+.top-bar {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 4px;
+    z-index: 1000; /* Ensure it stays above other elements */
+    background-color: white; /* <-- added to stop visual merging when scrolling */
+}
+
+.top-bar .username-label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.top-bar .logout-button {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.top-bar .logout-button:hover {
+    background-color: #c9302c;
+}
+
+/* --- The rest is your exact original --- */
+
 body {
     padding: 20px;
     margin: 0;
     font-family: Arial, sans-serif;
 }
 
-/* Make sure content doesn't overflow horizontally */
 * {
     box-sizing: border-box;
 }
@@ -15,46 +47,37 @@ body {
     padding: 0 15px;
 }
 
-/* Make the table scrollable on small screens */
 .table-responsive {
     overflow-x: auto;
 }
 
-/* Search bar styling */
 .search-container {
     max-width: 100%;
     margin: 0 auto;
     padding-bottom: 15px;
 }
 
-/* Ensure table is full width */
 table {
     width: 100%;
-    table-layout: fixed;  /* Prevent columns from expanding too much */
+    table-layout: fixed;
 }
 
-/* Make sure text inside the table doesn't overflow */
 #results-table th, #results-table td {
-    word-wrap: break-word;  /* Ensure long words wrap into the next line */
+    word-wrap: break-word;
     text-align: center;
-    white-space: normal;  /* Allow wrapping of text */
+    white-space: normal;
 }
 
-
-
-/* Input and button styling */
 #fileInput {
-    width: 100%;  /* Ensure file input stretches to available width */
+    width: 100%;
     margin-bottom: 10px;
 }
 
-/* Center form and search box */
 input[type="file"], input[type="text"] {
     display: block;
     width: 100%;
 }
 
-/* Table layout adjustments */
 table {
     table-layout: fixed;
     width: 100%;
@@ -62,22 +85,16 @@ table {
 }
 
 #results-table th, #results-table td {
-    word-wrap: break-word;  /* Make sure long words wrap */
-    white-space: normal;  /* Allow text to wrap in cells */
+    word-wrap: break-word;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;  /* Add ellipsis to overflow text */
+    text-overflow: ellipsis;
 }
 
-/* Ensure content inside the table is centered */
 th, td {
     padding: 8px;
 }
 
 #downloadexcel {
-    margin-left: 5px  ;
+    margin-left: 5px;
 }
-
-
-
-
-

@@ -14,6 +14,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Define paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+user_file_path = os.path.join(BASE_DIR, "users.xlsx")
 RDL_FOLDER = os.path.join(BASE_DIR, "rdl_files")
 file_path = os.path.join(BASE_DIR, "rdlfiles.xlsx")
 
@@ -57,21 +58,100 @@ def copy_column_widths(source_wb, target_wb):
 
 from datetime import timedelta  # Add this at the top if not already
 
+from openpyxl.utils import get_column_letter
+
+@app.route("/upload-users", methods=["POST"])
+def upload_users():
+    try:
+        if "file" not in request.files:
+            return jsonify({"error": "No file part"}), 400
+
+        file = request.files["file"]
+        if file.filename == "":
+            return jsonify({"error": "No selected file"}), 400
+
+        if not allowed_file(file.filename):
+            return jsonify({"error": "Invalid file type. Only .xlsx files are allowed"}), 400
+
+        # Save uploaded file temporarily
+        temp_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(temp_path)
+        print(f"📂 User file saved temporarily: {temp_path}")
+
+        # Load the uploaded Excel file
+        new_wb = load_workbook(temp_path)
+        new_ws = new_wb.active
+
+        # If users.xlsx exists, open it. Otherwise, create a new one
+        if os.path.exists(user_file_path):
+            existing_wb = load_workbook(user_file_path)
+            existing_ws = existing_wb.active
+        else:
+            existing_wb = load_workbook(temp_path)  # Clone the first uploaded file
+            existing_wb.save(user_file_path)
+            new_wb.close()
+            existing_wb.close()
+            os.remove(temp_path)
+            print("✅ Created users.xlsx from first upload.")
+            return jsonify({"message": "User file created and uploaded."}), 200
+
+        # ✅ Append new rows to the end of existing data
+        new_data = list(new_ws.iter_rows(min_row=1, values_only=True))
+        for row in new_data:
+            existing_ws.append(row)
+
+        # ✅ Preserve column widths
+        copy_column_widths(new_wb, existing_wb)
+
+        existing_wb.save(user_file_path)
+        new_wb.close()
+        existing_wb.close()
+        os.remove(temp_path)
+
+        print("✅ Users appended to users.xlsx successfully!")
+        return jsonify({"message": "Users uploaded successfully!"}), 200
+
+    except Exception as e:
+        print(f"❌ Error uploading users: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
 
-        if username == "mcast" and password == "search":
-            session.permanent = False  # ✅ Session ends when browser closes
-            session["logged_in"] = True
-            return redirect(url_for("home"))
-        else:
-            error = "Invalid credentials"
+    if request.method == "POST":
+        username = request.form.get("username").strip()
+        password = request.form.get("password").strip()
+
+        try:
+            if not os.path.exists(user_file_path):
+                error = "User database not found."
+                return render_template("login.html", error=error)
+
+            df_users = pd.read_excel(user_file_path, engine="openpyxl").fillna("")
+            df_users.columns = df_users.columns.str.strip()  # Clean column headers
+
+            # Loop through rows to check for a match
+            for _, row in df_users.iterrows():
+                user = str(row.get("Username", "")).strip()
+                pwd = str(row.get("Password", "")).strip()
+
+                if user == username and pwd == password:
+                    session["logged_in"] = True
+                    session["username"] = username
+                    return redirect(url_for("home"))
+
+            error = "Invalid username or password"
+
+        except Exception as e:
+            error = f"Error processing login: {e}"
+            print(f"❌ Login error: {e}")
 
     return render_template("login.html", error=error)
+
 
 
 @app.route("/logout")
@@ -84,7 +164,9 @@ def logout():
 def home():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
-    return render_template("index.html")  # ✅ Your Excel Search Engine page
+    username = session.get("username")
+    return render_template("index.html", username=username)
+
 
 
 @app.route("/upload", methods=["POST"])
